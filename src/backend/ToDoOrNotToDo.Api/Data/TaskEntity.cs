@@ -1,21 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ToDoOrNotToDo.Api.Models;
+namespace ToDoOrNotToDo.Api.Data;
 
 public class TaskEntity
 {
     public int Id { get; set; }
     
     [Required]
-    [MaxLength(200)]
+    [StringLength(100, MinimumLength = 1)]
     public string Title { get; set; } = string.Empty;
-    
-    [MaxLength(1000)]
-    public string? Description { get; set; }
     
     public bool IsCompleted { get; set; } = false;
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    
+    public DateTime? CompletedAt { get; set; }
 }

@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using ToDoOrNotToDo.Api.Models;
 
 namespace ToDoOrNotToDo.Api.Data;
 
@@ -18,9 +17,36 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<TaskEntity>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
-            entity.Property(e => e.Description).HasMaxLength(1000);
-            entity.Property(e => e.CreatedAt).IsRequired();
+            
+            entity.Property(e => e.Id)
+                .ValueGeneratedOnAdd();
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            
+            entity.Property(e => e.IsCompleted)
+                .IsRequired()
+                .HasDefaultValue(false);
+            
+            entity.Property(e => e.CreatedAt)
+                .IsRequired()
+                .HasColumnType("TEXT");
+            
+            entity.Property(e => e.UpdatedAt)
+                .IsRequired()
+                .HasColumnType("TEXT");
+            
+            entity.Property(e => e.CompletedAt)
+                .HasColumnType("TEXT");
+            
+            // Add indexes
+            entity.HasIndex(e => e.CreatedAt)
+                .HasDatabaseName("IX_Tasks_CreatedAt");
+            
+            entity.HasIndex(e => e.CompletedAt)
+                .HasDatabaseName("IX_Tasks_CompletedAt");
         });
     }
 }
