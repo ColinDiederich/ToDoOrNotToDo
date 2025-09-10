@@ -28,8 +28,7 @@ public class AppDbContext : DbContext
             
             entity.Property(e => e.IsCompleted)
                 .IsRequired()
-                .HasDefaultValue(false)
-                .ValueGeneratedNever();
+                .HasDefaultValue(false);
             
             entity.Property(e => e.CreatedAt)
                 .IsRequired()

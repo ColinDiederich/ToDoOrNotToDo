@@ -1,12 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using ToDoOrNotToDo.Api.Data;
 using ToDoOrNotToDo.Api.Services;
+using ToDoOrNotToDo.Api.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddControllers()
+builder.Services.AddControllers(options =>
+    {
+        options.Filters.Add<ErrorHandlingFilter>();
+    })
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
@@ -21,6 +25,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Add Services
 builder.Services.AddScoped<ITasksService, TasksService>();
+builder.Services.AddScoped<IValidationService, ValidationService>();
 
 var app = builder.Build();
 

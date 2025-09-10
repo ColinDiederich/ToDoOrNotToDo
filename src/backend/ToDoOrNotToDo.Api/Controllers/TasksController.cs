@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ToDoOrNotToDo.Api.DTOs;
 using ToDoOrNotToDo.Api.Services;
+using ToDoOrNotToDo.Api.Exceptions;
 
 namespace ToDoOrNotToDo.Api.Controllers;
 
@@ -9,10 +10,12 @@ namespace ToDoOrNotToDo.Api.Controllers;
 public class TasksController : ControllerBase
 {
     private readonly ITasksService _tasksService;
+    private readonly IValidationService _validationService;
 
-    public TasksController(ITasksService tasksService)
+    public TasksController(ITasksService tasksService, IValidationService validationService)
     {
         _tasksService = tasksService;
+        _validationService = validationService;
     }
 
     /// <summary>
@@ -32,21 +35,10 @@ public class TasksController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TaskDto>> CreateTask([FromBody] CreateTaskRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        try
-        {
-            var task = await _tasksService.CreateAsync(request.Title);
-            var taskDto = task.ToDto();
-            return CreatedAtAction(nameof(GetTasks), new { id = task.Id }, taskDto);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        _validationService.ValidateCreateTaskRequest(request);
+        var task = await _tasksService.CreateAsync(request.Title);
+        var taskDto = task.ToDto();
+        return CreatedAtAction(nameof(GetTasks), new { id = task.Id }, taskDto);
     }
 
     /// <summary>
@@ -55,32 +47,14 @@ public class TasksController : ControllerBase
     [HttpPatch]
     public async Task<ActionResult<TaskDto>> UpdateTask([FromBody] UpdateTaskRequest request)
     {
-        if (!ModelState.IsValid)
+        _validationService.ValidateUpdateTaskRequest(request);
+        var task = await _tasksService.UpdateAsync(request.Id.Value, request.Title, request.IsCompleted);
+        if (task == null)
         {
-            return BadRequest(ModelState);
+            throw new NotFoundException("Task", request.Id.Value);
         }
-
-        if (!request.IsValid)
-        {
-            return BadRequest(new { error = "At least one field (title or isCompleted) must be provided for update." });
-        }
-
-        try
-        {
-            var task = await _tasksService.UpdateAsync(request.Id, request.Title, request.IsCompleted);
-            
-            if (task == null)
-            {
-                return NotFound(new { error = "Task not found." });
-            }
-
-            var taskDto = task.ToDto();
-            return Ok(taskDto);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        var taskDto = task.ToDto();
+        return Ok(taskDto);
     }
 
     /// <summary>
@@ -90,7 +64,6 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> DeleteTask(int id)
     {
         var deleted = await _tasksService.DeleteAsync(id);
-        
         // Always return 204 No Content (idempotent behavior)
         return NoContent();
     }

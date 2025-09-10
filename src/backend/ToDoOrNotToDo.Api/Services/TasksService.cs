@@ -33,23 +33,10 @@ public class TasksService : ITasksService
 
     public async Task<TaskEntity> CreateAsync(string title)
     {
-        // Trim and validate title
-        var trimmedTitle = title?.Trim() ?? string.Empty;
-        
-        if (string.IsNullOrEmpty(trimmedTitle))
-        {
-            throw new ArgumentException("Title cannot be empty.", nameof(title));
-        }
-        
-        if (trimmedTitle.Length > 100)
-        {
-            throw new ArgumentException("Title cannot exceed 100 characters.", nameof(title));
-        }
-
         var now = DateTime.UtcNow;
         var task = new TaskEntity
         {
-            Title = trimmedTitle,
+            Title = title,
             IsCompleted = false,
             CreatedAt = now,
             UpdatedAt = now,
@@ -64,12 +51,6 @@ public class TasksService : ITasksService
 
     public async Task<TaskEntity?> UpdateAsync(int id, string? title = null, bool? isCompleted = null)
     {
-        // Validate that at least one field is provided
-        if (string.IsNullOrWhiteSpace(title) && !isCompleted.HasValue)
-        {
-            throw new ArgumentException("At least one field (title or isCompleted) must be provided for update.");
-        }
-
         var task = await _context.Tasks.FindAsync(id);
         if (task == null)
         {
@@ -78,7 +59,6 @@ public class TasksService : ITasksService
 
         var originalTitle = task.Title;
         var originalIsCompleted = task.IsCompleted;
-        var originalCompletedAt = task.CompletedAt;
 
         // Track if any changes were made
         bool hasChanges = false;
@@ -89,10 +69,6 @@ public class TasksService : ITasksService
             var trimmedTitle = title.Trim();
             if (trimmedTitle != originalTitle)
             {
-                if (trimmedTitle.Length > 100)
-                {
-                    throw new ArgumentException("Title cannot exceed 100 characters.", nameof(title));
-                }
                 task.Title = trimmedTitle;
                 hasChanges = true;
             }

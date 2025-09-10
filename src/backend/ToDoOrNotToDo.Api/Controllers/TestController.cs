@@ -35,6 +35,13 @@ public class TestController : ControllerBase
         var tasks = _context.Tasks.ToList();
         return Ok(tasks);
     }
+
+    [HttpGet("error")]
+    public IActionResult GetError()
+    {
+        // This will trigger the SERVER_ERROR handling
+        throw new InvalidOperationException("This is a test server error");
+    }
 }
 
 public class SampleDto
