@@ -10,7 +10,7 @@ public class TaskEntity
     [StringLength(100, MinimumLength = 1)]
     public string Title { get; set; } = string.Empty;
     
-    public bool IsCompleted { get; set; } = false;
+    public bool IsCompleted { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     

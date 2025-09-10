@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ToDoOrNotToDo.Api.Data;
+using ToDoOrNotToDo.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,9 @@ builder.Services.AddSwaggerGen();
 // Add Entity Framework
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+
+// Add Services
+builder.Services.AddScoped<ITasksService, TasksService>();
 
 var app = builder.Build();
 
