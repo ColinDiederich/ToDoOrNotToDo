@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using ToDoOrNotToDo.Api.Data;
 
 namespace ToDoOrNotToDo.Api.Controllers;
 
@@ -6,6 +7,12 @@ namespace ToDoOrNotToDo.Api.Controllers;
 [Route("api/[controller]")]
 public class TestController : ControllerBase
 {
+    private readonly AppDbContext _context;
+
+    public TestController(AppDbContext context)
+    {
+        _context = context;
+    }
     [HttpGet("sample")]
     public IActionResult GetSample()
     {
@@ -20,6 +27,13 @@ public class TestController : ControllerBase
         };
 
         return Ok(sample);
+    }
+
+    [HttpGet("tasks")]
+    public IActionResult GetTasks()
+    {
+        var tasks = _context.Tasks.ToList();
+        return Ok(tasks);
     }
 }
 

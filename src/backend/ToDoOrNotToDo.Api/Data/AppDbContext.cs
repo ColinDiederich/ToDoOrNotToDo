@@ -49,4 +49,62 @@ public class AppDbContext : DbContext
                 .HasDatabaseName("IX_Tasks_CompletedAt");
         });
     }
+
+    public static void Seed(AppDbContext context)
+    {
+        // Check if Tasks table is empty
+        if (context.Tasks.Any())
+        {
+            return; // Database already has data, no need to seed
+        }
+
+        var now = DateTime.UtcNow;
+        
+        var tasks = new List<TaskEntity>
+        {
+            new TaskEntity
+            {
+                Title = "Explore UI/UX",
+                IsCompleted = false,
+                CreatedAt = now.AddMinutes(-5),
+                UpdatedAt = now.AddMinutes(-5),
+                CompletedAt = null
+            },
+            new TaskEntity
+            {
+                Title = "Review front-end design",
+                IsCompleted = false,
+                CreatedAt = now.AddMinutes(-4),
+                UpdatedAt = now.AddMinutes(-4),
+                CompletedAt = null
+            },
+            new TaskEntity
+            {
+                Title = "Review back-end design",
+                IsCompleted = false,
+                CreatedAt = now.AddMinutes(-3),
+                UpdatedAt = now.AddMinutes(-3),
+                CompletedAt = null
+            },
+            new TaskEntity
+            {
+                Title = "Prepare job offer",
+                IsCompleted = false,
+                CreatedAt = now.AddMinutes(-2),
+                UpdatedAt = now.AddMinutes(-2),
+                CompletedAt = null
+            },
+            new TaskEntity
+            {
+                Title = "Start task management application",
+                IsCompleted = true,
+                CreatedAt = now.AddMinutes(-1),
+                UpdatedAt = now.AddMinutes(-1),
+                CompletedAt = now
+            }
+        };
+
+        context.Tasks.AddRange(tasks);
+        context.SaveChanges();
+    }
 }
