@@ -89,13 +89,24 @@
         </div>
       </div>
     </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <DeleteModal
+      :visible="showDeleteModal"
+      :message="deleteMessage"
+      confirm-text="Delete"
+      cancel-text="Cancel"
+      @confirm="confirmDelete"
+      @cancel="cancelDelete"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
-import { getTasks, createTask, updateTask } from '../services/api.js'
+import { getTasks, createTask, updateTask, deleteTask } from '../services/api.js'
 import TaskItem from './TaskItem.vue'
+import DeleteModal from './DeleteModal.vue'
 
 // Reactive state
 const loading = ref(true)
@@ -110,6 +121,11 @@ const togglingTasks = ref(new Set()) // Track which tasks are currently being to
 const editingTasks = ref(new Set()) // Track which tasks are currently being edited
 const editValues = ref({}) // Store edit input values for each task
 
+// Delete modal state
+const showDeleteModal = ref(false)
+const taskToDelete = ref(null)
+const isDeleting = ref(false)
+
 // Computed properties for task separation
 const activeTasks = computed(() => 
   allTasks.value.filter(task => !task.isCompleted)
@@ -118,6 +134,18 @@ const activeTasks = computed(() =>
 const completedTasks = computed(() => 
   allTasks.value.filter(task => task.isCompleted)
 )
+
+const deleteMessage = computed(() => {
+  try {
+    if (!taskToDelete.value || !taskToDelete.value.title) {
+      return ''
+    }
+    return `Are you sure you want to delete "${taskToDelete.value.title}"?`
+  } catch (error) {
+    console.warn('Error computing deleteMessage:', error)
+    return ''
+  }
+})
 
 // Global error handling
 const showGlobalError = (message) => {
@@ -299,8 +327,40 @@ const handleCancelEdit = (taskId) => {
 }
 
 const handleDelete = (taskId) => {
-  console.log('Delete task:', taskId)
-  // TODO: Implement API call to delete task
+  const task = allTasks.value.find(t => t.id === taskId)
+  if (!task) return
+  
+  taskToDelete.value = task
+  showDeleteModal.value = true
+}
+
+const confirmDelete = async () => {
+  if (!taskToDelete.value || isDeleting.value) return
+  
+  try {
+    isDeleting.value = true
+    clearGlobalError()
+    
+    // Call API to delete task
+    await deleteTask(taskToDelete.value.id)
+    
+    // Refresh tasks to get updated list from server
+    const tasks = await getTasks()
+    allTasks.value = tasks || []
+    
+  } catch (error) {
+    console.error('Failed to delete task:', error)
+    showGlobalError(error.message || 'Failed to delete task. Please try again.')
+  } finally {
+    isDeleting.value = false
+    showDeleteModal.value = false
+    taskToDelete.value = null
+  }
+}
+
+const cancelDelete = () => {
+  showDeleteModal.value = false
+  taskToDelete.value = null
 }
 
 // Load tasks on component mount
