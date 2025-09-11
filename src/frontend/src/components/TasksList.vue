@@ -32,8 +32,13 @@
               :key="task.id"
               :task="task"
               :disabled="togglingTasks.has(task.id)"
+              :is-editing="editingTasks.has(task.id)"
+              :edit-value="editValues[task.id] || task.title"
               @toggle="handleToggle"
               @edit="handleEdit"
+              @save-edit="handleSaveEdit"
+              @cancel-edit="handleCancelEdit"
+              @update-edit-value="handleUpdateEditValue"
               @delete="handleDelete"
             />
           </div>
@@ -102,6 +107,8 @@ const newTaskTitle = ref('')
 const taskInput = ref(null)
 const isCancelling = ref(false)
 const togglingTasks = ref(new Set()) // Track which tasks are currently being toggled
+const editingTasks = ref(new Set()) // Track which tasks are currently being edited
+const editValues = ref({}) // Store edit input values for each task
 
 // Computed properties for task separation
 const activeTasks = computed(() => 
@@ -162,6 +169,7 @@ const saveNewTask = async () => {
   
   const validationError = validateTaskTitle(newTaskTitle.value)
   if (validationError) {
+    isAddingTask.value = false
     showGlobalError(validationError)
     return
   }
@@ -220,8 +228,74 @@ const handleToggle = async (taskId) => {
 }
 
 const handleEdit = (taskId) => {
-  console.log('Edit task:', taskId)
-  // TODO: Implement edit functionality
+  const task = allTasks.value.find(t => t.id === taskId)
+  if (!task || task.isCompleted) {
+    return // Don't allow editing completed tasks
+  }
+  
+  // Enter edit mode
+  editingTasks.value.add(taskId)
+  editValues.value[taskId] = task.title
+}
+
+const handleUpdateEditValue = (taskId, value) => {
+  editValues.value[taskId] = value
+}
+
+const handleSaveEdit = async (taskId, value = null) => {
+  const task = allTasks.value.find(t => t.id === taskId)
+  if (!task) return
+  
+  // Use the passed value if available, otherwise fall back to reactive state
+  const newTitle = (value || editValues.value[taskId] || '').trim()
+  
+  // If title is empty, treat as cancel (like pressing Escape)
+  if (!newTitle) {
+    handleCancelEdit(taskId)
+    return
+  }
+  
+  // Client validation for non-empty titles
+  const validationError = validateTaskTitle(newTitle)
+  if (validationError) {
+    showGlobalError(validationError)
+    return
+  }
+  
+  // If title hasn't changed, just cancel edit
+  if (newTitle === task.title) {
+    handleCancelEdit(taskId)
+    return
+  }
+  
+  // Disable the row while saving
+  editingTasks.value.add(taskId)
+  
+  try {
+    // Call API to update task title
+    await updateTask({ 
+      id: taskId, 
+      title: newTitle 
+    })
+    
+    // On success, refresh tasks to get updated data from server
+    const tasks = await getTasks()
+    allTasks.value = tasks || []
+    
+  } catch (error) {
+    console.error('Failed to update task:', error)
+    showGlobalError(error.message || 'Failed to update task. Please try again.')
+  } finally {
+    // Exit edit mode
+    editingTasks.value.delete(taskId)
+    delete editValues.value[taskId]
+  }
+}
+
+const handleCancelEdit = (taskId) => {
+  // Exit edit mode and revert changes
+  editingTasks.value.delete(taskId)
+  delete editValues.value[taskId]
 }
 
 const handleDelete = (taskId) => {
