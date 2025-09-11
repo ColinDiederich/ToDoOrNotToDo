@@ -1,30 +1,27 @@
 <template>
-  <div class="container mx-auto px-4 py-8 min-h-screen">
-    <div class="max-w-4xl mx-auto">
-      <h1 class="text-4xl font-black text-gray-800 mb-8 no-caret" style="font-family: 'Varela Round', cursive; font-weight: 900; letter-spacing: -0.025em;">To Do or Not To Do</h1>
-      
+  <div class="container-main">
+    <div class="content-wrapper">
+      <h1 class="text-title mb-8">To Do or Not To Do</h1>
       
       <!-- Loading Spinner -->
-      <div v-if="loading" class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div v-if="loading" class="loading-container">
+        <div class="loading-spinner"></div>
       </div>
 
       <!-- Tasks List -->
-      <div v-else class="rounded-2xl p-6 shadow-lg bg-purple-300/30">
-        
-        
+      <div v-else class="tasks-container">
         <!-- Tasks with Active/Completed sections -->
-        <div class="relative" :class="{ 'opacity-50 pointer-events-none': isCreatingTask || isDeleting }">
+        <div class="tasks-content" :class="{ 'tasks-content-disabled': isCreatingTask || isDeleting }">
           <!-- No tasks message -->
-          <div v-if="allTasks.length === 0" class="text-gray-600 text-center py-8 no-caret text-xl font-semibold" style="font-family: 'Varela Round', cursive;">
+          <div v-if="allTasks.length === 0" class="text-no-tasks">
             No tasks found.
           </div>
           <!-- Active Tasks -->
-          <div v-else class="space-y-3 mb-6">
+          <div v-else class="tasks-section mb-6">
             <TransitionGroup
               name="task-slide"
               tag="div"
-              class="space-y-3"
+              class="tasks-section"
             >
               <TaskItem
                 v-for="task in activeTasks"
@@ -44,20 +41,19 @@
           </div>
 
           <!-- Add New Task Button/Input -->
-          <div class="mb-6 cursor-pointerselect-none">
+          <div class="add-task-container">
             <!-- Plus Button -->
             <button
               v-if="!isAddingTask"
               @click="startAddingTask"
               :disabled="isCreatingTask || isDeleting"
-              class="w-full p-4 border-2 border-dashed border-purple-800/50 rounded-xl text-gray-800 hover:border-purple-800 hover:text-purple-800 hover:bg-purple-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg font-semibold"
-              style="font-family: 'Varela Round', cursive;"
+              class="btn-add-task"
             >
               <span class="text-2xl">+</span> Add new task
             </button>
             
             <!-- Text Input -->
-            <div v-else class="border border-purple-300 rounded-xl p-4 bg-purple-300/50 shadow-sm">
+            <div v-else class="add-task-input-container">
               <input
                 ref="taskInput"
                 v-model="newTaskTitle"
@@ -66,19 +62,18 @@
                 @blur="saveNewTask"
                 :disabled="isCreatingTask || isDeleting"
                 placeholder="Enter task title..."
-                class="w-full border-none outline-none text-gray-800 placeholder-gray-400 bg-purple-300/50 disabled:opacity-50 text-lg font-medium"
-                style="font-family: 'Varela Round', cursive;"
+                class="input-task"
                 maxlength="500"
               />
             </div>
           </div>
           
           <!-- Completed Tasks -->
-          <div v-if="completedTasks.length > 0" class="space-y-3">
+          <div v-if="completedTasks.length > 0" class="tasks-section-completed">
             <TransitionGroup
               name="task-slide"
               tag="div"
-              class="space-y-3"
+              class="tasks-section"
             >
               <TaskItem
                 v-for="task in completedTasks"

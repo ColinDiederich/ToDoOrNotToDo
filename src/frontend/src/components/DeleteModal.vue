@@ -1,40 +1,40 @@
 <template>
   <div
     v-if="visible"
-    class="fixed inset-0 z-50 flex items-center justify-center"
+    class="modal-backdrop"
   >
     <!-- Backdrop -->
     <div 
-      class="absolute inset-0 bg-black/75"
+      class="modal-overlay"
       @click="handleBackdropClick"
     ></div>
     
     <!-- Modal -->
     <div
-      class="relative bg-purple-300 rounded-lg shadow-xl max-w-md w-full mx-4"
+      class="modal-container"
       @click.stop
     >
       <!-- Header -->
-      <div class="px-6 py-4">
-        <h3 class="text-lg font-semibold text-gray-900">Confirm Delete</h3>
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm Delete</h3>
       </div>
       
       <!-- Content -->
-      <div class="px-6 py-4">
-        <p class="text-gray-700 font-semibold">{{ message }}</p>
+      <div class="modal-content">
+        <p class="modal-message">{{ message }}</p>
       </div>
       
       <!-- Actions -->
-      <div class="px-6 py-4 rounded-b-lg flex justify-end gap-3">
+      <div class="modal-actions">
         <button
           @click="handleCancel"
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-purple-200 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+          class="btn-modal-cancel"
         >
           {{ cancelText }}
         </button>
         <button
           @click="handleConfirm"
-          class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+          class="btn-modal-confirm"
         >
           {{ confirmText }}
         </button>

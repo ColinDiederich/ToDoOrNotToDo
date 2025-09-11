@@ -1,24 +1,24 @@
 <template>
   <div 
     :class="[
-      'flex items-center p-5 border border-purple-400 rounded-xl transition-all duration-300 ease-out',
+      'task-item-base',
       disabled 
-        ? 'bg-purple-300/60' 
+        ? 'task-item-disabled' 
         : isEditing
-          ? 'bg-purple-300/60 border-purple-300 shadow-sm'
-          : 'hover:bg-purple-300/60 hover:shadow-lg hover:border-purple-300 hover:scale-[1.02]'
+          ? 'task-item-editing'
+          : 'task-item-interactive'
     ]"
   >
     <!-- Checkbox on left -->
-    <div class="flex items-center gap-3 flex-1 select-none">
+    <div class="task-content">
       <input
         type="checkbox"
         :checked="task.isCompleted"
         :disabled="disabled"
         @click="!disabled && !isEditing && $emit('toggle', task.id)"
         :class="[
-          'w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 transition-all duration-200 ease-out',
-          (disabled) ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'
+          'task-checkbox',
+          disabled ? 'task-checkbox-disabled' : 'task-checkbox-interactive'
         ]"
       />
       
@@ -27,31 +27,30 @@
         v-if="!isEditing"
         @click="!disabled && !task.isCompleted && handleTitleClick()"
         :class="[
-          'flex-1 py-2 -mx-2 px-2 rounded cursor-pointer min-w-0 max-w-full',
+          'task-title-area',
           disabled 
-            ? 'cursor-not-allowed' 
+            ? 'task-title-area-disabled' 
             : task.isCompleted 
-              ? 'cursor-default' 
+              ? 'task-title-area-completed' 
               : ''
         ]"
       >
         <span
           :class="[
-            'text-xl select-none overflow-hidden font-semibold',
+            'select-none overflow-hidden text-wrap-anywhere',
             disabled 
-              ? 'text-gray-400' 
+              ? 'text-task-disabled' 
               : task.isCompleted 
-                ? 'line-through text-gray-500' 
-                : 'text-gray-800'
+                ? 'text-task-completed' 
+                : 'text-task-active'
           ]"
-          style="font-family: 'Varela Round', cursive; word-wrap: break-word; overflow-wrap: anywhere; word-break: break-word; hyphens: auto; max-width: 100%; display: block; white-space: pre-wrap;"
         >
           {{ task.title }}
         </span>
       </div>
       
       <!-- Edit input -->
-      <div v-else class="flex-1 bg-purple-200">
+      <div v-else class="task-edit-area">
         <textarea
           :value="editValue"
           @keydown.enter="handleEnter"
@@ -59,8 +58,7 @@
           @blur="handleBlur"
           @focus="handleFocus"
           @input="autoResize"
-          class="w-full text-xl border-none outline-none text-gray-800 font-semibold resize-none overflow-hidden"
-          style="font-family: 'Varela Round', cursive; min-height: 1.5rem;"
+          class="textarea-edit"
           maxlength="500"
           ref="editInput"
           rows="1"
@@ -73,10 +71,10 @@
       @click="!disabled && !isEditing && $emit('delete', task.id)"
       :disabled="disabled || isEditing"
       :class="[
-        'p-3 rounded-lg transition-colors',
+        'task-delete-btn',
         (disabled || isEditing)
-          ? 'text-gray-400 cursor-not-allowed' 
-          : 'text-gray-500 hover:text-red-500  hover:bg-purple-200 cursor-pointer'
+          ? 'task-delete-btn-disabled' 
+          : 'task-delete-btn-interactive'
       ]"
       :title="disabled ? 'Task is being updated...' : isEditing ? 'Cannot delete while editing' : 'Delete task'"
     >

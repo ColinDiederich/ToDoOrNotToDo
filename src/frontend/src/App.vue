@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="bg-purple-800/30 transparent">
+  <div id="app" class="app-container">
     <!-- Global Error Banner -->
     <ErrorBanner
       v-if="errorMessage"
@@ -10,7 +10,7 @@
     />
     
     <!-- Main Content -->
-    <div :class="{ 'pt-16': errorMessage }">
+    <div :class="{ 'app-content': errorMessage }">
       <router-view />
     </div>
   </div>
