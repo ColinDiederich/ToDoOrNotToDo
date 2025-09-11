@@ -1,0 +1,14 @@
+# Placeholder for party blower MP3 file
+# 
+# To add the party blower sound:
+# 1. Find a party blower sound MP3 online (try freesound.org, zapsplat.com, or similar)
+# 2. Download the MP3 file
+# 3. Rename it to "party-blower.mp3" 
+# 4. Place it in the src/frontend/public/ folder
+# 5. The sound will automatically be available at /party-blower.mp3
+#
+# Recommended search terms:
+# - "party blower sound"
+# - "party horn sound" 
+# - "kazoo sound"
+# - "party noise maker"

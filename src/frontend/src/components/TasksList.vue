@@ -106,6 +106,7 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { getTasks, createTask, updateTask, deleteTask } from '../services/api.js'
 import { showError } from '../services/eventBus.js'
+import { celebrateTaskCompletion } from '../services/celebration.js'
 import TaskItem from './TaskItem.vue'
 import DeleteModal from './DeleteModal.vue'
 
@@ -234,6 +235,11 @@ const handleToggle = async (taskId) => {
     // On success, refresh tasks to get updated data from server
     const tasks = await getTasks()
     allTasks.value = tasks || []
+    
+    // Celebrate if task was completed (not uncompleted)
+    if (!task.isCompleted) {
+      celebrateTaskCompletion()
+    }
     
   } catch (error) {
     console.error('Failed to toggle task:', error)
