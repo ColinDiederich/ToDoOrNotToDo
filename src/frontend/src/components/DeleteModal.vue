@@ -2,10 +2,12 @@
   <div
     v-if="visible"
     class="fixed inset-0 z-50 flex items-center justify-center"
-    @click="handleBackdropClick"
   >
     <!-- Backdrop -->
-    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div 
+      class="absolute inset-0 bg-black bg-opacity-50"
+      @click="handleBackdropClick"
+    ></div>
     
     <!-- Modal -->
     <div
@@ -76,11 +78,8 @@ const handleCancel = () => {
   emit('cancel')
 }
 
-const handleBackdropClick = (event) => {
-  // Only cancel if clicking the backdrop itself, not the modal content
-  if (event.target === event.currentTarget) {
-    handleCancel()
-  }
+const handleBackdropClick = () => {
+  handleCancel()
 }
 
 const handleKeydown = (event) => {
