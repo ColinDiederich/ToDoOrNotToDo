@@ -34,9 +34,9 @@ public class ValidationService : IValidationService
             throw new ValidationException("Property validation failed.", "title", "Title cannot be empty.");
         }
         
-        if (trimmedTitle.Length > 100)
+        if (trimmedTitle.Length > 500)
         {
-            throw new ValidationException("Property validation failed.", "title", "Title cannot exceed 100 characters.");
+            throw new ValidationException("Property validation failed.", "title", "Title cannot exceed 500 characters.");
         }
     }
 }

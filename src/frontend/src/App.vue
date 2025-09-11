@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="bg-purple-800/30 transparent">
     <!-- Global Error Banner -->
     <ErrorBanner
       v-if="errorMessage"
@@ -43,10 +43,3 @@ onUnmounted(() => {
   }
 })
 </script>
-
-<style>
-#app {
-  min-height: 100vh;
-  background-color: #f8fafc;
-}
-</style>

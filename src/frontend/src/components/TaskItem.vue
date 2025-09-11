@@ -1,12 +1,12 @@
 <template>
   <div 
     :class="[
-      'flex items-center p-4 border border-gray-200 rounded-lg transition-all duration-200',
+      'flex items-center p-5 border border-purple-300 rounded-xl transition-all duration-200',
       disabled 
-        ? 'bg-gray-100 opacity-60' 
+        ? 'bg-purple-300/60' 
         : isEditing
-          ? 'bg-blue-50 border-blue-300'
-          : 'hover:bg-blue-50 hover:shadow-lg hover:border-blue-300 hover:scale-[1.02]'
+          ? 'bg-purple-300/60 border-purple-300 shadow-sm'
+          : 'hover:bg-purple-300/60 hover:shadow-lg hover:border-purple-300 hover:scale-[1.02]'
     ]"
   >
     <!-- Checkbox on left -->
@@ -14,11 +14,11 @@
       <input
         type="checkbox"
         :checked="task.isCompleted"
-        :disabled="disabled || isEditing"
+        :disabled="disabled"
         @click="!disabled && !isEditing && $emit('toggle', task.id)"
         :class="[
           'w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2',
-          (disabled || isEditing) ? 'cursor-not-allowed' : 'cursor-pointer'
+          (disabled) ? 'cursor-not-allowed' : 'cursor-pointer'
         ]"
       />
       
@@ -37,13 +37,14 @@
       >
         <span
           :class="[
-            'text-lg select-none break-all overflow-hidden',
+            'text-xl select-none break-all overflow-hidden font-semibold',
             disabled 
               ? 'text-gray-400' 
               : task.isCompleted 
                 ? 'line-through text-gray-500' 
                 : 'text-gray-800'
           ]"
+          style="font-family: 'Varela Round', cursive;"
         >
           {{ task.title }}
         </span>
@@ -57,8 +58,9 @@
           @keydown.esc="handleEscape"
           @blur="handleBlur"
           @focus="handleFocus"
-          class="w-full text-lg border-none outline-none bg-transparent text-gray-800"
-          maxlength="100"
+          class="w-full text-xl border-none outline-none text-gray-800 font-semibold"
+          style="font-family: 'Varela Round', cursive;"
+          maxlength="500"
           ref="editInput"
         />
       </div>
@@ -69,10 +71,10 @@
       @click="!disabled && !isEditing && $emit('delete', task.id)"
       :disabled="disabled || isEditing"
       :class="[
-        'p-2 rounded-md transition-colors',
+        'p-3 rounded-lg transition-colors',
         (disabled || isEditing)
-          ? 'text-gray-300 cursor-not-allowed' 
-          : 'text-gray-400 hover:text-red-500 hover:bg-red-50 cursor-pointer'
+          ? 'text-gray-400 cursor-not-allowed' 
+          : 'text-gray-500 hover:text-red-500  hover:bg-purple-200 cursor-pointer'
       ]"
       :title="disabled ? 'Task is being updated...' : isEditing ? 'Cannot delete while editing' : 'Delete task'"
     >

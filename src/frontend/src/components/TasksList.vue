@@ -1,7 +1,7 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="container mx-auto px-4 py-8 min-h-screen">
     <div class="max-w-4xl mx-auto">
-      <h1 class="text-3xl font-bold text-gray-800 mb-8 no-caret">To Do or Not To Do</h1>
+      <h1 class="text-4xl font-black text-gray-800 mb-8 no-caret" style="font-family: 'Varela Round', cursive; font-weight: 900; letter-spacing: -0.025em;">To Do or Not To Do</h1>
       
       
       <!-- Loading Spinner -->
@@ -10,13 +10,13 @@
       </div>
 
       <!-- Tasks List -->
-      <div v-else class="card">
+      <div v-else class="rounded-2xl p-6 shadow-lg bg-purple-300/30">
         
         
         <!-- Tasks with Active/Completed sections -->
         <div class="relative" :class="{ 'opacity-50 pointer-events-none': isCreatingTask || isDeleting }">
           <!-- No tasks message -->
-          <div v-if="allTasks.length === 0" class="text-gray-500 text-center py-8 no-caret">
+          <div v-if="allTasks.length === 0" class="text-gray-600 text-center py-8 no-caret text-xl font-semibold" style="font-family: 'Varela Round', cursive;">
             No tasks found.
           </div>
           <!-- Active Tasks -->
@@ -38,19 +38,20 @@
           </div>
 
           <!-- Add New Task Button/Input -->
-          <div class="mb-6 select-none">
+          <div class="mb-6 cursor-pointerselect-none">
             <!-- Plus Button -->
             <button
               v-if="!isAddingTask"
               @click="startAddingTask"
               :disabled="isCreatingTask || isDeleting"
-              class="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full p-4 border-2 border-dashed border-purple-800/50 rounded-xl text-gray-800 hover:border-purple-800 hover:text-purple-800 hover:bg-purple-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg font-semibold"
+              style="font-family: 'Varela Round', cursive;"
             >
-              <span class="text-xl">+</span> Add new task
+              <span class="text-2xl">+</span> Add new task
             </button>
             
             <!-- Text Input -->
-            <div v-else class="border border-gray-300 rounded-lg p-3 bg-white">
+            <div v-else class="border border-purple-300 rounded-xl p-4 bg-purple-300/50 shadow-sm">
               <input
                 ref="taskInput"
                 v-model="newTaskTitle"
@@ -59,8 +60,9 @@
                 @blur="saveNewTask"
                 :disabled="isCreatingTask || isDeleting"
                 placeholder="Enter task title..."
-                class="w-full border-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50"
-                maxlength="100"
+                class="w-full border-none outline-none text-gray-800 placeholder-gray-400 bg-purple-300/50 disabled:opacity-50 text-lg font-medium"
+                style="font-family: 'Varela Round', cursive;"
+                maxlength="500"
               />
             </div>
           </div>
@@ -131,7 +133,7 @@ const deleteMessage = computed(() => {
     if (!taskToDelete.value || !taskToDelete.value.title) {
       return ''
     }
-    return `Are you sure you want to delete "${taskToDelete.value.title}"?`
+    return `Are you sure you want to delete: "${taskToDelete.value.title}"?`
   } catch (error) {
     console.warn('Error computing deleteMessage:', error)
     return ''
@@ -149,8 +151,8 @@ const validateTaskTitle = (title) => {
   if (!trimmed) {
     return 'Task title cannot be empty'
   }
-  if (trimmed.length > 100) {
-    return 'Task title must be 100 characters or less'
+  if (trimmed.length > 500) {
+    return 'Task title must be 500 characters or less'
   }
   return null
 }
@@ -180,7 +182,6 @@ const saveNewTask = async () => {
   const validationError = validateTaskTitle(newTaskTitle.value)
   if (validationError) {
     isAddingTask.value = false
-    showGlobalError(validationError)
     return
   }
   

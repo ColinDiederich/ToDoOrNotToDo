@@ -5,30 +5,30 @@
   >
     <!-- Backdrop -->
     <div 
-      class="absolute inset-0 bg-black bg-opacity-50"
+      class="absolute inset-0 bg-black/75"
       @click="handleBackdropClick"
     ></div>
     
     <!-- Modal -->
     <div
-      class="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4"
+      class="relative bg-purple-300 rounded-lg shadow-xl max-w-md w-full mx-4"
       @click.stop
     >
       <!-- Header -->
-      <div class="px-6 py-4 border-b border-gray-200">
+      <div class="px-6 py-4">
         <h3 class="text-lg font-semibold text-gray-900">Confirm Delete</h3>
       </div>
       
       <!-- Content -->
       <div class="px-6 py-4">
-        <p class="text-gray-700">{{ message }}</p>
+        <p class="text-gray-700 font-semibold">{{ message }}</p>
       </div>
       
       <!-- Actions -->
-      <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end gap-3">
+      <div class="px-6 py-4 rounded-b-lg flex justify-end gap-3">
         <button
           @click="handleCancel"
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-purple-200 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
         >
           {{ cancelText }}
         </button>
