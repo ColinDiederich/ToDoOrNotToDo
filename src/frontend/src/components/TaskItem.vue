@@ -1,12 +1,12 @@
 <template>
   <div 
     :class="[
-      'flex items-center p-4 border border-gray-200 rounded-lg transition-colors',
+      'flex items-center p-4 border border-gray-200 rounded-lg transition-all duration-200',
       disabled 
         ? 'bg-gray-100 opacity-60' 
         : isEditing
           ? 'bg-blue-50 border-blue-300'
-          : 'hover:bg-gray-50'
+          : 'hover:bg-blue-50 hover:shadow-lg hover:border-blue-300 hover:scale-[1.02]'
     ]"
   >
     <!-- Checkbox on left -->
@@ -22,8 +22,35 @@
         ]"
       />
       
-      <!-- Title text or edit input -->
-      <div v-if="isEditing" class="flex-1">
+      <!-- Clickable area for editing - entire space between checkbox and trash icon -->
+      <div 
+        v-if="!isEditing"
+        @click="!disabled && !task.isCompleted && handleTitleClick()"
+        :class="[
+          'flex-1 py-2 -mx-2 px-2 rounded cursor-pointer min-w-0',
+          disabled 
+            ? 'cursor-not-allowed' 
+            : task.isCompleted 
+              ? 'cursor-default' 
+              : ''
+        ]"
+      >
+        <span
+          :class="[
+            'text-lg select-none break-all overflow-hidden',
+            disabled 
+              ? 'text-gray-400' 
+              : task.isCompleted 
+                ? 'line-through text-gray-500' 
+                : 'text-gray-800'
+          ]"
+        >
+          {{ task.title }}
+        </span>
+      </div>
+      
+      <!-- Edit input -->
+      <div v-else class="flex-1">
         <input
           :value="editValue"
           @keydown.enter="handleEnter"
@@ -35,20 +62,6 @@
           ref="editInput"
         />
       </div>
-      <span
-        v-else
-        @click="!disabled && handleTitleClick()"
-        :class="[
-          'text-lg select-none',
-          disabled 
-            ? 'cursor-not-allowed text-gray-400' 
-            : task.isCompleted 
-              ? 'line-through text-gray-500 cursor-pointer' 
-              : 'text-gray-800 hover:text-blue-600 cursor-pointer'
-        ]"
-      >
-        {{ task.title }}
-      </span>
     </div>
     
     <!-- Trash icon on right -->
@@ -59,7 +72,7 @@
         'p-2 rounded-md transition-colors',
         (disabled || isEditing)
           ? 'text-gray-300 cursor-not-allowed' 
-          : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
+          : 'text-gray-400 hover:text-red-500 hover:bg-red-50 cursor-pointer'
       ]"
       :title="disabled ? 'Task is being updated...' : isEditing ? 'Cannot delete while editing' : 'Delete task'"
     >

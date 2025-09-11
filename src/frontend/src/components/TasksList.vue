@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
-      <h1 class="text-3xl font-bold text-gray-800 mb-8 no-caret">Tasks</h1>
+      <h1 class="text-3xl font-bold text-gray-800 mb-8 no-caret">To Do or Not To Do</h1>
       
       
       <!-- Loading Spinner -->
@@ -11,7 +11,6 @@
 
       <!-- Tasks List -->
       <div v-else class="card">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4 no-caret">Task List</h2>
         
         
         <!-- Tasks with Active/Completed sections -->
@@ -65,10 +64,7 @@
               />
             </div>
           </div>
-
-          <!-- Divider between Active and Completed -->
-          <div v-if="activeTasks.length > 0 && completedTasks.length > 0" class="border-t border-gray-200 my-6 select-none"></div>
-
+          
           <!-- Completed Tasks -->
           <div v-if="completedTasks.length > 0" class="space-y-3">
             <TaskItem
