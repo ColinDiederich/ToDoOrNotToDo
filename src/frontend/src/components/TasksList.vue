@@ -31,6 +31,7 @@
               v-for="task in activeTasks"
               :key="task.id"
               :task="task"
+              :disabled="togglingTasks.has(task.id)"
               @toggle="handleToggle"
               @edit="handleEdit"
               @delete="handleDelete"
@@ -74,6 +75,7 @@
               v-for="task in completedTasks"
               :key="task.id"
               :task="task"
+              :disabled="togglingTasks.has(task.id)"
               @toggle="handleToggle"
               @edit="handleEdit"
               @delete="handleDelete"
@@ -87,7 +89,7 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
-import { getTasks, createTask } from '../services/api.js'
+import { getTasks, createTask, updateTask } from '../services/api.js'
 import TaskItem from './TaskItem.vue'
 
 // Reactive state
@@ -99,6 +101,7 @@ const isCreatingTask = ref(false)
 const newTaskTitle = ref('')
 const taskInput = ref(null)
 const isCancelling = ref(false)
+const togglingTasks = ref(new Set()) // Track which tasks are currently being toggled
 
 // Computed properties for task separation
 const activeTasks = computed(() => 
@@ -185,9 +188,35 @@ const saveNewTask = async () => {
 }
 
 // Event handlers
-const handleToggle = (taskId) => {
-  console.log('Toggle task:', taskId)
-  // TODO: Implement API call to toggle task completion
+const handleToggle = async (taskId) => {
+  // Find the task to get current completion status
+  const task = allTasks.value.find(t => t.id === taskId)
+  if (!task) {
+    console.error('Task not found:', taskId)
+    return
+  }
+
+  // Immediately disable the toggled row's controls
+  togglingTasks.value.add(taskId)
+
+  try {
+    // Call API to toggle task completion
+    await updateTask({ 
+      id: taskId, 
+      isCompleted: !task.isCompleted 
+    })
+    
+    // On success, refresh tasks to get updated data from server
+    const tasks = await getTasks()
+    allTasks.value = tasks || []
+    
+  } catch (error) {
+    console.error('Failed to toggle task:', error)
+    showGlobalError(error.message || 'Failed to toggle task. Please try again.')
+  } finally {
+    // Re-enable the row's controls
+    togglingTasks.value.delete(taskId)
+  }
 }
 
 const handleEdit = (taskId) => {
