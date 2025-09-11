@@ -44,7 +44,7 @@
                 ? 'line-through text-gray-500' 
                 : 'text-gray-800'
           ]"
-          style="font-family: 'Varela Round', cursive; word-wrap: break-word; overflow-wrap: anywhere; word-break: break-word; hyphens: auto; max-width: 100%; display: block;"
+          style="font-family: 'Varela Round', cursive; word-wrap: break-word; overflow-wrap: anywhere; word-break: break-word; hyphens: auto; max-width: 100%; display: block; white-space: pre-wrap;"
         >
           {{ task.title }}
         </span>
@@ -52,16 +52,18 @@
       
       <!-- Edit input -->
       <div v-else class="flex-1 bg-purple-200">
-        <input
+        <textarea
           :value="editValue"
           @keydown.enter="handleEnter"
           @keydown.esc="handleEscape"
           @blur="handleBlur"
           @focus="handleFocus"
-          class="w-full text-xl border-none outline-none text-gray-800 font-semibold"
-          style="font-family: 'Varela Round', cursive;"
+          @input="autoResize"
+          class="w-full text-xl border-none outline-none text-gray-800 font-semibold resize-none overflow-hidden"
+          style="font-family: 'Varela Round', cursive; min-height: 1.5rem;"
           maxlength="500"
           ref="editInput"
+          rows="1"
         />
       </div>
     </div>
@@ -130,6 +132,13 @@ const handleTitleClick = () => {
 }
 
 const handleEnter = (event) => {
+  // If Shift is pressed, allow line break (default behavior)
+  if (event.shiftKey) {
+    return
+  }
+  
+  // If Enter without Shift, save the task
+  event.preventDefault()
   // Set flag to prevent blur event from interfering
   isHandlingKeypress.value = true
   // Capture the current input value and pass it directly to save
@@ -164,6 +173,15 @@ const handleFocus = () => {
   // Focus handler - no special logic needed
 }
 
+// Auto-resize textarea based on content
+const autoResize = () => {
+  const textarea = editInput.value
+  if (textarea) {
+    textarea.style.height = 'auto'
+    textarea.style.height = textarea.scrollHeight + 'px'
+  }
+}
+
 // Auto-focus edit input when entering edit mode
 watch(() => props.isEditing, async (isEditing) => {
   if (isEditing) {
@@ -174,6 +192,8 @@ watch(() => props.isEditing, async (isEditing) => {
     if (input) {
       const length = input.value.length
       input.setSelectionRange(length, length)
+      // Auto-resize the textarea to fit content
+      autoResize()
     }
   }
 })
