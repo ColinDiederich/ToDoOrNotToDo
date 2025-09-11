@@ -198,7 +198,6 @@ const saveNewTask = async () => {
   const validationError = validateTaskTitle(newTaskTitle.value)
   if (validationError) {
     isAddingTask.value = false
-    showGlobalError(validationError)
     return
   }
   
