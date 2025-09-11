@@ -27,7 +27,7 @@
         v-if="!isEditing"
         @click="!disabled && !task.isCompleted && handleTitleClick()"
         :class="[
-          'flex-1 py-2 -mx-2 px-2 rounded cursor-pointer min-w-0',
+          'flex-1 py-2 -mx-2 px-2 rounded cursor-pointer min-w-0 max-w-full',
           disabled 
             ? 'cursor-not-allowed' 
             : task.isCompleted 
@@ -37,14 +37,14 @@
       >
         <span
           :class="[
-            'text-xl select-none break-all overflow-hidden font-semibold',
+            'text-xl select-none overflow-hidden font-semibold',
             disabled 
               ? 'text-gray-400' 
               : task.isCompleted 
                 ? 'line-through text-gray-500' 
                 : 'text-gray-800'
           ]"
-          style="font-family: 'Varela Round', cursive;"
+          style="font-family: 'Varela Round', cursive; word-wrap: break-word; overflow-wrap: anywhere; word-break: break-word; hyphens: auto; max-width: 100%; display: block;"
         >
           {{ task.title }}
         </span>
