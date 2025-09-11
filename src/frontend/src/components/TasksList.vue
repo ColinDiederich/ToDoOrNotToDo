@@ -21,18 +21,14 @@
         <div v-else>
           <!-- Active Tasks -->
           <div v-if="activeTasks.length > 0" class="space-y-3 mb-6">
-            <div 
-              v-for="task in activeTasks" 
+            <TaskItem
+              v-for="task in activeTasks"
               :key="task.id"
-              class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
-            >
-              <div class="flex items-center gap-3">
-                <div class="w-4 h-4 border-2 border-gray-300 rounded"></div>
-                <span class="text-gray-800 text-lg">
-                  {{ task.title }}
-                </span>
-              </div>
-            </div>
+              :task="task"
+              @toggle="handleToggle"
+              @edit="handleEdit"
+              @delete="handleDelete"
+            />
           </div>
 
           <!-- Divider between Active and Completed -->
@@ -40,18 +36,14 @@
 
           <!-- Completed Tasks -->
           <div v-if="completedTasks.length > 0" class="space-y-3">
-            <div 
-              v-for="task in completedTasks" 
+            <TaskItem
+              v-for="task in completedTasks"
               :key="task.id"
-              class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
-            >
-              <div class="flex items-center gap-3">
-                <div class="w-4 h-4 border-2 border-gray-300 rounded bg-gray-300"></div>
-                <span class="line-through text-gray-500 text-lg">
-                  {{ task.title }}
-                </span>
-              </div>
-            </div>
+              :task="task"
+              @toggle="handleToggle"
+              @edit="handleEdit"
+              @delete="handleDelete"
+            />
           </div>
         </div>
       </div>
@@ -62,6 +54,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { getTasks } from '../services/api.js'
+import TaskItem from './TaskItem.vue'
 
 // Reactive state
 const loading = ref(true)
@@ -75,6 +68,22 @@ const activeTasks = computed(() =>
 const completedTasks = computed(() => 
   allTasks.value.filter(task => task.isCompleted)
 )
+
+// Event handlers
+const handleToggle = (taskId) => {
+  console.log('Toggle task:', taskId)
+  // TODO: Implement API call to toggle task completion
+}
+
+const handleEdit = (taskId) => {
+  console.log('Edit task:', taskId)
+  // TODO: Implement edit functionality
+}
+
+const handleDelete = (taskId) => {
+  console.log('Delete task:', taskId)
+  // TODO: Implement API call to delete task
+}
 
 // Load tasks on component mount
 onMounted(async () => {
