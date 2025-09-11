@@ -27,6 +27,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<ITasksService, TasksService>();
 builder.Services.AddScoped<IValidationService, ValidationService>();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Ensure database is created and seed data
@@ -38,6 +49,9 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
+// Enable CORS (must be before routing)
+app.UseCors("AllowFrontend");
+
 // Enable Swagger in both Development and Production
 app.UseSwagger();
 app.UseSwaggerUI();
