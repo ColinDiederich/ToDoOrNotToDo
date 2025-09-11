@@ -1,7 +1,7 @@
 <template>
   <div 
     :class="[
-      'flex items-center p-5 border border-purple-300 rounded-xl transition-all duration-200',
+      'flex items-center p-5 border border-purple-400 rounded-xl transition-all duration-300 ease-out',
       disabled 
         ? 'bg-purple-300/60' 
         : isEditing
@@ -17,8 +17,8 @@
         :disabled="disabled"
         @click="!disabled && !isEditing && $emit('toggle', task.id)"
         :class="[
-          'w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2',
-          (disabled) ? 'cursor-not-allowed' : 'cursor-pointer'
+          'w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 transition-all duration-200 ease-out',
+          (disabled) ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'
         ]"
       />
       
@@ -51,7 +51,7 @@
       </div>
       
       <!-- Edit input -->
-      <div v-else class="flex-1">
+      <div v-else class="flex-1 bg-purple-200">
         <input
           :value="editValue"
           @keydown.enter="handleEnter"

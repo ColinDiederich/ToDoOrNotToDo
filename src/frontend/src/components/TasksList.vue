@@ -21,20 +21,26 @@
           </div>
           <!-- Active Tasks -->
           <div v-else class="space-y-3 mb-6">
-            <TaskItem
-              v-for="task in activeTasks"
-              :key="task.id"
-              :task="task"
-              :disabled="togglingTasks.has(task.id)"
-              :is-editing="editingTasks.has(task.id)"
-              :edit-value="editValues[task.id] || task.title"
-              @toggle="handleToggle"
-              @edit="handleEdit"
-              @save-edit="handleSaveEdit"
-              @cancel-edit="handleCancelEdit"
-              @update-edit-value="handleUpdateEditValue"
-              @delete="handleDelete"
-            />
+            <TransitionGroup
+              name="task-slide"
+              tag="div"
+              class="space-y-3"
+            >
+              <TaskItem
+                v-for="task in activeTasks"
+                :key="task.id"
+                :task="task"
+                :disabled="togglingTasks.has(task.id)"
+                :is-editing="editingTasks.has(task.id)"
+                :edit-value="editValues[task.id] || task.title"
+                @toggle="handleToggle"
+                @edit="handleEdit"
+                @save-edit="handleSaveEdit"
+                @cancel-edit="handleCancelEdit"
+                @update-edit-value="handleUpdateEditValue"
+                @delete="handleDelete"
+              />
+            </TransitionGroup>
           </div>
 
           <!-- Add New Task Button/Input -->
@@ -69,15 +75,21 @@
           
           <!-- Completed Tasks -->
           <div v-if="completedTasks.length > 0" class="space-y-3">
-            <TaskItem
-              v-for="task in completedTasks"
-              :key="task.id"
-              :task="task"
-              :disabled="togglingTasks.has(task.id)"
-              @toggle="handleToggle"
-              @edit="handleEdit"
-              @delete="handleDelete"
-            />
+            <TransitionGroup
+              name="task-slide"
+              tag="div"
+              class="space-y-3"
+            >
+              <TaskItem
+                v-for="task in completedTasks"
+                :key="task.id"
+                :task="task"
+                :disabled="togglingTasks.has(task.id)"
+                @toggle="handleToggle"
+                @edit="handleEdit"
+                @delete="handleDelete"
+              />
+            </TransitionGroup>
           </div>
         </div>
       </div>
@@ -364,5 +376,31 @@ onMounted(async () => {
 <style scoped>
 .no-caret {
   caret-color: transparent;
+}
+
+/* Task sliding animations */
+.task-slide-enter-active,
+.task-slide-leave-active {
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.task-slide-enter-from {
+  opacity: 0;
+  transform: translateX(-30px) scale(0.95);
+}
+
+.task-slide-leave-to {
+  opacity: 0;
+  transform: translateX(30px) scale(0.95);
+}
+
+.task-slide-move {
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Ensure smooth transitions for task items */
+.task-slide-enter-active .flex,
+.task-slide-leave-active .flex {
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 </style>
