@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
-      <h1 class="text-3xl font-bold text-gray-800 mb-8">Tasks</h1>
+      <h1 class="text-3xl font-bold text-gray-800 mb-8 no-caret">Tasks</h1>
       
       
       <!-- Loading Spinner -->
@@ -11,17 +11,17 @@
 
       <!-- Tasks List -->
       <div v-else class="card">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4">Task List</h2>
+        <h2 class="text-xl font-semibold text-gray-700 mb-4 no-caret">Task List</h2>
         
-        <!-- No tasks message -->
-        <div v-if="allTasks.length === 0" class="text-gray-500 text-center py-8">
-          No tasks found.
-        </div>
         
         <!-- Tasks with Active/Completed sections -->
-        <div v-else class="relative" :class="{ 'opacity-50 pointer-events-none': isCreatingTask || isDeleting }">
+        <div class="relative" :class="{ 'opacity-50 pointer-events-none': isCreatingTask || isDeleting }">
+          <!-- No tasks message -->
+          <div v-if="allTasks.length === 0" class="text-gray-500 text-center py-8 no-caret">
+            No tasks found.
+          </div>
           <!-- Active Tasks -->
-          <div v-if="activeTasks.length > 0" class="space-y-3 mb-6">
+          <div v-else class="space-y-3 mb-6">
             <TaskItem
               v-for="task in activeTasks"
               :key="task.id"
@@ -39,7 +39,7 @@
           </div>
 
           <!-- Add New Task Button/Input -->
-          <div class="mb-6">
+          <div class="mb-6 select-none">
             <!-- Plus Button -->
             <button
               v-if="!isAddingTask"
@@ -67,7 +67,7 @@
           </div>
 
           <!-- Divider between Active and Completed -->
-          <div v-if="activeTasks.length > 0 && completedTasks.length > 0" class="border-t border-gray-200 my-6"></div>
+          <div v-if="activeTasks.length > 0 && completedTasks.length > 0" class="border-t border-gray-200 my-6 select-none"></div>
 
           <!-- Completed Tasks -->
           <div v-if="completedTasks.length > 0" class="space-y-3">
@@ -362,3 +362,10 @@ onMounted(async () => {
   }
 })
 </script>
+
+
+<style scoped>
+.no-caret {
+  caret-color: transparent;
+}
+</style>

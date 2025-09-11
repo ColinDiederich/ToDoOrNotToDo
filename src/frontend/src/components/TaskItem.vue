@@ -10,7 +10,7 @@
     ]"
   >
     <!-- Checkbox on left -->
-    <div class="flex items-center gap-3 flex-1">
+    <div class="flex items-center gap-3 flex-1 select-none">
       <input
         type="checkbox"
         :checked="task.isCompleted"
