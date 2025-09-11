@@ -3,11 +3,6 @@
     <div class="max-w-4xl mx-auto">
       <h1 class="text-3xl font-bold text-gray-800 mb-8">Tasks</h1>
       
-      <!-- Global Error Banner -->
-      <div v-if="globalError" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-        {{ globalError }}
-        <button @click="clearGlobalError" class="ml-2 text-red-500 hover:text-red-700 font-bold">&times;</button>
-      </div>
       
       <!-- Loading Spinner -->
       <div v-if="loading" class="flex justify-center items-center py-12">
@@ -24,7 +19,7 @@
         </div>
         
         <!-- Tasks with Active/Completed sections -->
-        <div v-else>
+        <div v-else class="relative" :class="{ 'opacity-50 pointer-events-none': isCreatingTask || isDeleting }">
           <!-- Active Tasks -->
           <div v-if="activeTasks.length > 0" class="space-y-3 mb-6">
             <TaskItem
@@ -49,7 +44,7 @@
             <button
               v-if="!isAddingTask"
               @click="startAddingTask"
-              :disabled="isCreatingTask"
+              :disabled="isCreatingTask || isDeleting"
               class="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span class="text-xl">+</span> Add new task
@@ -63,7 +58,7 @@
                 @keydown.enter="saveNewTask"
                 @keydown.esc="cancelAddingTask"
                 @blur="saveNewTask"
-                :disabled="isCreatingTask"
+                :disabled="isCreatingTask || isDeleting"
                 placeholder="Enter task title..."
                 class="w-full border-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50"
                 maxlength="100"
@@ -105,13 +100,13 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { getTasks, createTask, updateTask, deleteTask } from '../services/api.js'
+import { showError } from '../services/eventBus.js'
 import TaskItem from './TaskItem.vue'
 import DeleteModal from './DeleteModal.vue'
 
 // Reactive state
 const loading = ref(true)
 const allTasks = ref([])
-const globalError = ref('')
 const isAddingTask = ref(false)
 const isCreatingTask = ref(false)
 const newTaskTitle = ref('')
@@ -147,17 +142,9 @@ const deleteMessage = computed(() => {
   }
 })
 
-// Global error handling
+// Global error handling using event bus
 const showGlobalError = (message) => {
-  globalError.value = message
-  // Auto-clear error after 5 seconds
-  setTimeout(() => {
-    globalError.value = ''
-  }, 5000)
-}
-
-const clearGlobalError = () => {
-  globalError.value = ''
+  showError(message)
 }
 
 // Task input validation
@@ -185,7 +172,6 @@ const cancelAddingTask = () => {
   isCancelling.value = true
   isAddingTask.value = false
   newTaskTitle.value = ''
-  clearGlobalError()
   // Reset the cancelling flag after a brief delay to allow blur event to complete
   nextTick(() => {
     isCancelling.value = false
@@ -198,12 +184,12 @@ const saveNewTask = async () => {
   const validationError = validateTaskTitle(newTaskTitle.value)
   if (validationError) {
     isAddingTask.value = false
+    showGlobalError(validationError)
     return
   }
   
   try {
     isCreatingTask.value = true
-    clearGlobalError()
     
     const newTask = await createTask(newTaskTitle.value.trim())
     
@@ -338,7 +324,6 @@ const confirmDelete = async () => {
   
   try {
     isDeleting.value = true
-    clearGlobalError()
     
     // Call API to delete task
     await deleteTask(taskToDelete.value.id)

@@ -3,7 +3,7 @@
  * Provides native fetch wrappers for all task-related endpoints
  */
 
-const API_BASE_URL = 'http://localhost:5280/api';
+const API_BASE_URL = '/api';
 
 /**
  * Standardized error class for API errors
