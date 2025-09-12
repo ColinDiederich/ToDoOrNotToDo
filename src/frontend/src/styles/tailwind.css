@@ -8,7 +8,7 @@
   }
   
   .text-title {
-    @apply text-4xl font-black text-gray-800;
+    @apply text-4xl font-black text-gray-800 select-none;
     font-family: 'Varela Round', cursive;
     letter-spacing: -0.025em;
     caret-color: transparent;
