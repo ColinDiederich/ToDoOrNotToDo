@@ -7,7 +7,7 @@
         No tasks found.
       </div>
       <!-- No search results message -->
-      <div v-else-if="searchQuery && filteredTasks.length === 0" class="text-no-tasks">
+      <div v-else-if="searchQuery && sortedFilteredTasks.length === 0" class="text-no-tasks">
         No tasks found for "{{ searchQuery }}".
       </div>
       <!-- Active Tasks -->
@@ -18,7 +18,7 @@
           class="tasks-section"
         >
           <TaskItem
-            v-for="task in activeTasks"
+            v-for="task in sortedActiveTasks"
             :key="task.id"
             :task="task"
             :disabled="togglingTasks.has(task.id)"
@@ -64,14 +64,14 @@
       </div>
       
       <!-- Completed Tasks -->
-      <div v-if="completedTasks.length > 0" class="tasks-section-completed">
+      <div v-if="sortedCompletedTasks.length > 0" class="tasks-section-completed">
         <TransitionGroup
           name="task-slide"
           tag="div"
           class="tasks-section"
         >
           <TaskItem
-            v-for="task in completedTasks"
+            v-for="task in sortedCompletedTasks"
             :key="task.id"
             :task="task"
             :disabled="togglingTasks.has(task.id)"
@@ -164,6 +164,14 @@ const props = defineProps({
   newTaskTitle: {
     type: String,
     default: ''
+  },
+  sortBy: {
+    type: String,
+    default: 'dateCreated'
+  },
+  sortOrder: {
+    type: String,
+    default: 'asc'
   }
 })
 
@@ -401,6 +409,52 @@ const validateTaskTitle = (title) => {
   }
   return null
 }
+
+// Sort function
+const sortTasks = (tasks, sortBy, sortOrder) => {
+  if (!tasks || tasks.length === 0) return tasks
+  
+  return [...tasks].sort((a, b) => {
+    let comparison = 0
+    
+    switch (sortBy) {
+      case 'title':
+        comparison = a.title.localeCompare(b.title)
+        break
+      case 'dateCreated':
+        comparison = new Date(a.createdAt) - new Date(b.createdAt)
+        break
+      case 'dateModified':
+        comparison = new Date(a.updatedAt) - new Date(b.updatedAt)
+        break
+      default:
+        comparison = new Date(a.createdAt) - new Date(b.createdAt)
+    }
+    
+    return sortOrder === 'asc' ? comparison : -comparison
+  })
+}
+
+// Computed properties for sorted tasks
+const sortedActiveTasks = computed(() => {
+  return sortTasks(props.activeTasks, props.sortBy, props.sortOrder)
+})
+
+const sortedCompletedTasks = computed(() => {
+  return sortTasks(props.completedTasks, props.sortBy, props.sortOrder)
+})
+
+const sortedFilteredTasks = computed(() => {
+  return sortTasks(props.filteredTasks, props.sortBy, props.sortOrder)
+})
+
+const sortedFilteredActiveTasks = computed(() => {
+  return sortTasks(props.filteredActiveTasks, props.sortBy, props.sortOrder)
+})
+
+const sortedFilteredCompletedTasks = computed(() => {
+  return sortTasks(props.filteredCompletedTasks, props.sortBy, props.sortOrder)
+})
 
 // Watch for isAddingTask to focus the input
 watch(() => props.isAddingTask, async (isAdding) => {

@@ -132,11 +132,82 @@
   
   /* Search Components */
   .search-container {
-    @apply max-w-full ml-2;
+    @apply max-w-full ml-2 flex items-center relative;
+  }
+
+  .search-sort-row {
+    @apply flex items-center justify-between gap-4;
+  }
+
+  /* Sort Components */
+  .sort-container {
+    @apply flex justify-end;
+  }
+
+  .sort-options-container {
+    @apply flex items-center gap-2 select-none mr-2;
+  }
+
+  .sort-label {
+    @apply text-purple-900 text-base font-semibold;
+    font-family: 'Varela Round', cursive;
+  }
+
+  .sort-dropdown {
+    @apply px-4 py-3 border-2 border-purple-200 rounded-lg bg-purple-200 text-purple-900 text-base font-semibold focus:outline-none focus:border-purple-400 transition-colors shadow-sm;
+    font-family: 'Varela Round', cursive;
+  }
+
+  /* Custom Dropdown Styles */
+  .custom-dropdown {
+    @apply relative cursor-pointer;
+  }
+
+  .dropdown-selected {
+    @apply px-4 py-3 border-2 border-purple-200 rounded-lg bg-purple-200 text-purple-900 text-base font-semibold transition-colors shadow-sm flex items-center justify-between min-w-[140px];
+    font-family: 'Varela Round', cursive;
+  }
+
+  .dropdown-selected:hover {
+    @apply border-purple-300 bg-purple-300;
+  }
+
+  .dropdown-arrow {
+    @apply transition-transform duration-200 ml-2;
+  }
+
+  .arrow-up {
+    @apply rotate-180;
+  }
+
+  .dropdown-options {
+    @apply absolute top-full left-0 right-0 mt-0.5 bg-white border-2 border-purple-200 rounded-lg shadow-lg z-50 overflow-hidden;
+  }
+
+  .dropdown-option {
+    @apply px-4 py-3 text-purple-900 text-base font-semibold cursor-pointer transition-colors hover:bg-purple-100 border-b border-purple-100 last:border-b-0;
+    font-family: 'Varela Round', cursive;
+  }
+
+  .dropdown-option:last-child {
+    @apply border-b-0;
+  }
+
+  .option-selected {
+    @apply bg-purple-200 text-purple-900;
+  }
+
+  .dropdown-option:hover {
+    @apply bg-purple-100;
+  }
+
+  .sort-toggle-btn {
+    @apply px-4 py-3 bg-purple-600/60 text-white rounded-full hover:bg-purple-700/75 focus:outline-none transition-colors shadow-sm flex items-center justify-center;
+    font-family: 'Varela Round', cursive;
   }
 
   .search-input-wrapper {
-    @apply relative flex items-center max-w-lg select-none;
+    @apply relative flex items-center max-w-2xl select-none;
   }
 
   .search-icon {
@@ -172,7 +243,7 @@
   }
 
   .search-results-info {
-    @apply text-left mt-2 p-0;
+    @apply text-left mt-2 p-0 absolute top-full left-0 right-0;
   }
 
   /* Add Task Components */

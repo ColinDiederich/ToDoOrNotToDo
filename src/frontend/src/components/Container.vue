@@ -3,13 +3,19 @@
     <div class="content-wrapper">
       <h1 class="text-title mb-8">To Do or Not To Do</h1>
       
-      <!-- Search Input -->
-      <SearchInput
-        :all-tasks="allTasks"
-        :active-tasks="activeTasks"
-        :completed-tasks="completedTasks"
-        @search-change="handleSearchChange"
-      />
+      <!-- Search and Sort Row -->
+      <div class="search-sort-row mb-6">
+        <SearchInput
+          :all-tasks="allTasks"
+          :active-tasks="activeTasks"
+          :completed-tasks="completedTasks"
+          @search-change="handleSearchChange"
+        />
+        
+        <div class="sort-container">
+          <SortOptions @sort-change="handleSortChange" />
+        </div>
+      </div>
       
       <!-- Loading Spinner -->
       <div v-if="loading" class="loading-container">
@@ -26,6 +32,8 @@
         :filtered-tasks="filteredTasks"
         :filtered-active-tasks="filteredActiveTasks"
         :filtered-completed-tasks="filteredCompletedTasks"
+        :sort-by="sortBy"
+        :sort-order="sortOrder"
         @refresh-tasks="refreshTasks"
         @create-task="handleCreateTask"
       />
@@ -39,6 +47,7 @@ import { getTasks, createTask } from '../services/api.js'
 import { showError } from '../services/eventBus.js'
 import SearchInput from './SearchInput.vue'
 import TasksList from './TasksList.vue'
+import SortOptions from './SortOptions.vue'
 
 // Reactive state
 const loading = ref(true)
@@ -50,6 +59,10 @@ const searchQuery = ref('')
 const filteredTasks = ref([])
 const filteredActiveTasks = ref([])
 const filteredCompletedTasks = ref([])
+
+// Sort state
+const sortBy = ref('dateCreated')
+const sortOrder = ref('asc')
 
 
 // Computed properties for task separation
@@ -72,6 +85,12 @@ const handleSearchChange = (searchData) => {
   filteredTasks.value = searchData.filteredTasks
   filteredActiveTasks.value = searchData.filteredActiveTasks
   filteredCompletedTasks.value = searchData.filteredCompletedTasks
+}
+
+// Sort functionality
+const handleSortChange = (sortData) => {
+  sortBy.value = sortData.sortBy
+  sortOrder.value = sortData.sortOrder
 }
 
 // Handle task creation from TasksList
