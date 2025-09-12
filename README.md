@@ -133,6 +133,59 @@ curl -i -X DELETE http://localhost:5280/api/tasks/1
 - **Deployment:** Dockerize backend & frontend; optionally serve frontend from backend in production; move DB to a managed service.
 - **CI/CD:** **GitHub Actions** for build/test, lint, and deploy workflows.
 
+
+### Monitoring & Observability
+
+#### Current State
+- **Basic logging**: Console logging for development
+- **Health endpoint**: Simple status check
+
+#### Production Requirements
+- **Structured logging**: Serilog with JSON formatting
+- **Metrics**: Application performance monitoring (APM)
+- **Distributed tracing**: Request correlation across services
+- **Alerting**: Error rate and response time monitoring
+- **Dashboard**: Real-time application health visualization
+
+### Security Considerations
+
+#### Current Implementation
+- **No authentication**: Single-user demo application
+- **Input validation**: Server-side validation with DataAnnotations
+- **CORS configuration**: Restricted to localhost:5173 for development
+
+#### Production Security Requirements
+- **Authentication**: JWT or OAuth2 integration
+- **Authorization**: Role-based access control for multi-user scenarios
+- **Input sanitization**: XSS prevention and SQL injection protection
+- **HTTPS enforcement**: TLS termination and secure headers
+- **Rate limiting**: API throttling to prevent abuse
+
+### Performance & Scalability
+
+#### Current Limitations
+- **Single-user design**: No authentication or user isolation
+- **In-memory operations**: All tasks loaded at once (suitable for <1000 tasks)
+- **No caching**: Direct database access for all operations
+
+#### Scaling Strategies
+- **Pagination**: Implement cursor-based pagination for large datasets
+- **Caching**: Add Redis for frequently accessed data
+- **CDN**: Static asset delivery for production frontend
+
+### Testing Strategy
+
+#### Current State
+- **Manual testing**: cURL examples and manual UI verification
+- **No automated tests**: Omitted for brevity in takehome scope
+
+#### Recommended Testing Approach
+- **Unit tests**: Service layer business logic and validation
+- **Integration tests**: API endpoint testing with test database
+- **E2E tests**: Playwright/Cypress for critical user flows
+- **Performance tests**: Load testing for API endpoints
+- **Contract tests**: API schema validation and backward compatibility
+
 ## Monetization Opportunities
 - Free with Ads
 - Premium Subscription with additional features
