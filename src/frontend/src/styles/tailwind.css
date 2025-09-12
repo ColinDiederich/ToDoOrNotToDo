@@ -215,7 +215,7 @@
   }
 
   .search-input {
-    @apply w-full py-3 pr-10 pl-12 border-2 border-purple-200 rounded-full text-base transition-all duration-200 bg-purple-200 shadow-sm;
+    @apply w-full py-3 pr-10 pl-12 border-2 border-purple-200 rounded-lg text-base transition-all duration-200 bg-purple-200 shadow-sm;
   }
 
   .search-input:focus {
