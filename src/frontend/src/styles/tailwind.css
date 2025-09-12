@@ -201,6 +201,28 @@
     @apply bg-purple-100;
   }
 
+  /* Sound Toggle Component */
+  .sound-toggle-container {
+    @apply fixed bottom-6 right-6 z-50;
+  }
+
+  .sound-toggle-btn {
+    @apply w-12 h-12 bg-purple-600/60 text-white rounded-full hover:bg-purple-700/75 focus:outline-none transition-colors flex items-center justify-center;
+    font-family: 'Varela Round', cursive;
+  }
+
+  .sound-toggle-btn.sound-enabled {
+    @apply bg-purple-600/60 text-white;
+  }
+
+  .sound-toggle-btn:not(.sound-enabled) {
+    @apply bg-gray-400 text-gray-600;
+  }
+
+  .sound-icon {
+    @apply transition-all duration-200;
+  }
+
   .sort-toggle-btn {
     @apply px-4 py-3 bg-purple-600/60 text-white rounded-full hover:bg-purple-700/75 focus:outline-none transition-colors shadow-sm flex items-center justify-center;
     font-family: 'Varela Round', cursive;

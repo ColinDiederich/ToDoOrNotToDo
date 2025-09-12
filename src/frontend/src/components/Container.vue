@@ -37,6 +37,9 @@
         @refresh-tasks="refreshTasks"
         @create-task="handleCreateTask"
       />
+      
+      <!-- Sound Toggle -->
+      <SoundToggle @sound-toggle="handleSoundToggle" />
     </div>
   </div>
 </template>
@@ -48,6 +51,7 @@ import { showError } from '../services/eventBus.js'
 import SearchInput from './SearchInput.vue'
 import TasksList from './TasksList.vue'
 import SortOptions from './SortOptions.vue'
+import SoundToggle from './SoundToggle.vue'
 
 // Reactive state
 const loading = ref(true)
@@ -120,6 +124,14 @@ const refreshTasks = async () => {
     console.error('Failed to refresh tasks:', error)
     showGlobalError('Failed to refresh tasks. Please try again.')
   }
+}
+
+// Handle sound toggle
+const handleSoundToggle = (soundEnabled) => {
+  // The sound state is managed by the SoundToggle component
+  // and persisted in localStorage. The effects.js service will
+  // check this preference when playing sounds.
+  console.log('Sound effects:', soundEnabled ? 'enabled' : 'disabled')
 }
 
 // Load tasks on component mount
