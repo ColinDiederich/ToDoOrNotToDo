@@ -390,7 +390,7 @@
 
   /* Sort Toggle */
   .sort-toggle-btn {
-    @apply px-4 py-3 bg-purple-600/60 text-white rounded-full hover:bg-purple-700/75 focus:outline-none transition-colors shadow-sm flex items-center justify-center;
+    @apply px-4 py-3 bg-purple-600/60 text-white rounded-full hover:bg-purple-700/75 focus:outline-none transition-colors shadow-sm flex items-center justify-center cursor-pointer;
     font-family: var(--font-primary);
   }
 
@@ -505,11 +505,11 @@
   }
   
   .btn-modal-cancel {
-    @apply px-4 py-2 text-sm font-medium text-gray-700 bg-purple-200 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors;
+    @apply px-4 py-2 text-sm font-medium text-gray-700 bg-purple-200 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors cursor-pointer;
   }
   
   .btn-modal-confirm {
-    @apply px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors;
+    @apply px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors cursor-pointer;
   }
 
   /* ========================================================================
