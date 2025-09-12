@@ -45,6 +45,21 @@ const shootConfetti = () => {
   })
 }
 
+// Play delete confirmation sound from MP3 file
+const playDeleteSound = () => {
+  try {
+    // Create audio element and play the MP3 file
+    // You can replace 'delete-sound.mp3' with your provided MP3 filename
+    const audio = new Audio('/delete-sound.mp3')
+    audio.volume = 0.6 // Slightly lower volume for delete sound
+    audio.play().catch(error => {
+      console.warn('Could not play delete sound:', error)
+    })
+  } catch (error) {
+    console.warn('Could not play delete sound:', error)
+  }
+}
+
 // Main celebration function
 export const celebrateTaskCompletion = () => {
   // Play party blower sound
@@ -52,4 +67,28 @@ export const celebrateTaskCompletion = () => {
   
   // Shoot confetti
   shootConfetti()
+}
+
+// Play uncheck sound from MP3 file
+const playUncheckSoundInternal = () => {
+  try {
+    // Create audio element and play the MP3 file
+    const audio = new Audio('/uncheck-sound.mp3')
+    audio.volume = 0.5 // Lower volume for uncheck sound (more subtle)
+    audio.play().catch(error => {
+      console.warn('Could not play uncheck sound:', error)
+    })
+  } catch (error) {
+    console.warn('Could not play uncheck sound:', error)
+  }
+}
+
+// Delete confirmation sound function
+export const playDeleteConfirmationSound = () => {
+  playDeleteSound()
+}
+
+// Uncheck sound function
+export const playUncheckSound = () => {
+  playUncheckSoundInternal()
 }

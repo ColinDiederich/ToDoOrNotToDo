@@ -1,92 +1,85 @@
 <template>
-  <div class="container-main">
-    <div class="content-wrapper">
-      <h1 class="text-title mb-8">To Do or Not To Do</h1>
-      
-      <!-- Loading Spinner -->
-      <div v-if="loading" class="loading-container">
-        <div class="loading-spinner"></div>
+  <div class="tasks-container">
+    <!-- Tasks with Active/Completed sections -->
+    <div class="tasks-content" :class="{ 'tasks-content-disabled': isCreatingTask || isDeleting }">
+      <!-- No tasks message -->
+      <div v-if="allTasks.length === 0" class="text-no-tasks">
+        No tasks found.
+      </div>
+      <!-- No search results message -->
+      <div v-else-if="searchQuery && filteredTasks.length === 0" class="text-no-tasks">
+        No tasks found for "{{ searchQuery }}".
+      </div>
+      <!-- Active Tasks -->
+      <div v-else class="tasks-section mb-6">
+        <TransitionGroup
+          name="task-slide"
+          tag="div"
+          class="tasks-section"
+        >
+          <TaskItem
+            v-for="task in activeTasks"
+            :key="task.id"
+            :task="task"
+            :disabled="togglingTasks.has(task.id)"
+            :is-editing="editingTasks.has(task.id)"
+            :edit-value="editValues[task.id] || task.title"
+            @toggle="handleToggle"
+            @edit="handleEdit"
+            @save-edit="handleSaveEdit"
+            @cancel-edit="handleCancelEdit"
+            @update-edit-value="handleUpdateEditValue"
+            @delete="handleDelete"
+          />
+        </TransitionGroup>
       </div>
 
-      <!-- Tasks List -->
-      <div v-else class="tasks-container">
-        <!-- Tasks with Active/Completed sections -->
-        <div class="tasks-content" :class="{ 'tasks-content-disabled': isCreatingTask || isDeleting }">
-          <!-- No tasks message -->
-          <div v-if="allTasks.length === 0" class="text-no-tasks">
-            No tasks found.
-          </div>
-          <!-- Active Tasks -->
-          <div v-else class="tasks-section mb-6">
-            <TransitionGroup
-              name="task-slide"
-              tag="div"
-              class="tasks-section"
-            >
-              <TaskItem
-                v-for="task in activeTasks"
-                :key="task.id"
-                :task="task"
-                :disabled="togglingTasks.has(task.id)"
-                :is-editing="editingTasks.has(task.id)"
-                :edit-value="editValues[task.id] || task.title"
-                @toggle="handleToggle"
-                @edit="handleEdit"
-                @save-edit="handleSaveEdit"
-                @cancel-edit="handleCancelEdit"
-                @update-edit-value="handleUpdateEditValue"
-                @delete="handleDelete"
-              />
-            </TransitionGroup>
-          </div>
-
-          <!-- Add New Task Button/Input -->
-          <div class="add-task-container">
-            <!-- Plus Button -->
-            <button
-              v-if="!isAddingTask"
-              @click="startAddingTask"
-              :disabled="isCreatingTask || isDeleting"
-              class="btn-add-task"
-            >
-              <span class="text-2xl">+</span> Add new task
-            </button>
-            
-            <!-- Text Input -->
-            <div v-else class="add-task-input-container">
-              <input
-                ref="taskInput"
-                v-model="newTaskTitle"
-                @keydown.enter="saveNewTask"
-                @keydown.esc="cancelAddingTask"
-                @blur="saveNewTask"
-                :disabled="isCreatingTask || isDeleting"
-                placeholder="Enter task title..."
-                class="input-task"
-                maxlength="500"
-              />
-            </div>
-          </div>
-          
-          <!-- Completed Tasks -->
-          <div v-if="completedTasks.length > 0" class="tasks-section-completed">
-            <TransitionGroup
-              name="task-slide"
-              tag="div"
-              class="tasks-section"
-            >
-              <TaskItem
-                v-for="task in completedTasks"
-                :key="task.id"
-                :task="task"
-                :disabled="togglingTasks.has(task.id)"
-                @toggle="handleToggle"
-                @edit="handleEdit"
-                @delete="handleDelete"
-              />
-            </TransitionGroup>
-          </div>
+      <!-- Add New Task Button/Input -->
+      <div class="add-task-container">
+        <!-- Plus Button -->
+        <button
+          v-if="!isAddingTask"
+          @click="startAddingTask"
+          :disabled="isCreatingTask || isDeleting"
+          class="btn-add-task"
+        >
+          <span class="text-2xl">+</span> Add new task
+        </button>
+        
+        <!-- Text Input -->
+        <div v-else class="add-task-input-container">
+          <input
+            ref="taskInput"
+            :value="newTaskTitle"
+            @keydown.enter="saveNewTask"
+            @keydown.esc="cancelAddingTask"
+            @blur="saveNewTask"
+            @input="updateNewTaskTitle"
+            :disabled="isCreatingTask || isDeleting"
+            placeholder="Enter task title..."
+            class="input-task"
+            maxlength="500"
+          />
         </div>
+      </div>
+      
+      <!-- Completed Tasks -->
+      <div v-if="completedTasks.length > 0" class="tasks-section-completed">
+        <TransitionGroup
+          name="task-slide"
+          tag="div"
+          class="tasks-section"
+        >
+          <TaskItem
+            v-for="task in completedTasks"
+            :key="task.id"
+            :task="task"
+            :disabled="togglingTasks.has(task.id)"
+            @toggle="handleToggle"
+            @edit="handleEdit"
+            @delete="handleDelete"
+          />
+        </TransitionGroup>
       </div>
     </div>
     
@@ -103,39 +96,100 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
-import { getTasks, createTask, updateTask, deleteTask } from '../services/api.js'
+import { ref, watch, nextTick, computed } from 'vue'
+import { updateTask, deleteTask } from '../services/api.js'
 import { showError } from '../services/eventBus.js'
-import { celebrateTaskCompletion } from '../services/celebration.js'
+import { celebrateTaskCompletion, playUncheckSound } from '../services/effects.js'
 import TaskItem from './TaskItem.vue'
 import DeleteModal from './DeleteModal.vue'
 
-// Reactive state
-const loading = ref(true)
-const allTasks = ref([])
-const isAddingTask = ref(false)
-const isCreatingTask = ref(false)
-const newTaskTitle = ref('')
+// Props
+const props = defineProps({
+  allTasks: {
+    type: Array,
+    default: () => []
+  },
+  activeTasks: {
+    type: Array,
+    default: () => []
+  },
+  completedTasks: {
+    type: Array,
+    default: () => []
+  },
+  searchQuery: {
+    type: String,
+    default: ''
+  },
+  filteredTasks: {
+    type: Array,
+    default: () => []
+  },
+  filteredActiveTasks: {
+    type: Array,
+    default: () => []
+  },
+  filteredCompletedTasks: {
+    type: Array,
+    default: () => []
+  },
+  loading: {
+    type: Boolean,
+    default: false
+  },
+  isCreatingTask: {
+    type: Boolean,
+    default: false
+  },
+  isDeleting: {
+    type: Boolean,
+    default: false
+  },
+  togglingTasks: {
+    type: Set,
+    default: () => new Set()
+  },
+  editingTasks: {
+    type: Set,
+    default: () => new Set()
+  },
+  editValues: {
+    type: Object,
+    default: () => ({})
+  },
+  isAddingTask: {
+    type: Boolean,
+    default: false
+  },
+  newTaskTitle: {
+    type: String,
+    default: ''
+  }
+})
+
+// Emits
+const emit = defineEmits([
+  'refresh-tasks',
+  'create-task'
+])
+
+// Refs
 const taskInput = ref(null)
-const isCancelling = ref(false)
-const togglingTasks = ref(new Set()) // Track which tasks are currently being toggled
-const editingTasks = ref(new Set()) // Track which tasks are currently being edited
-const editValues = ref({}) // Store edit input values for each task
+
+// Task modification state
+const togglingTasks = ref(new Set())
+const editingTasks = ref(new Set())
+const editValues = ref({})
+const isAddingTask = ref(false)
+const newTaskTitle = ref('')
+const isCreatingTask = ref(false)
 
 // Delete modal state
 const showDeleteModal = ref(false)
 const taskToDelete = ref(null)
 const isDeleting = ref(false)
 
-// Computed properties for task separation
-const activeTasks = computed(() => 
-  allTasks.value.filter(task => !task.isCompleted)
-)
-
-const completedTasks = computed(() => 
-  allTasks.value.filter(task => task.isCompleted)
-)
-
+// Computed properties
 const deleteMessage = computed(() => {
   try {
     if (!taskToDelete.value || !taskToDelete.value.title) {
@@ -148,75 +202,10 @@ const deleteMessage = computed(() => {
   }
 })
 
-// Global error handling using event bus
-const showGlobalError = (message) => {
-  showError(message)
-}
-
-// Task input validation
-const validateTaskTitle = (title) => {
-  const trimmed = title.trim()
-  if (!trimmed) {
-    return 'Task title cannot be empty'
-  }
-  if (trimmed.length > 500) {
-    return 'Task title must be 500 characters or less'
-  }
-  return null
-}
-
-// Add new task functionality
-const startAddingTask = () => {
-  isAddingTask.value = true
-  newTaskTitle.value = ''
-  nextTick(() => {
-    taskInput.value?.focus()
-  })
-}
-
-const cancelAddingTask = () => {
-  isCancelling.value = true
-  isAddingTask.value = false
-  newTaskTitle.value = ''
-  // Reset the cancelling flag after a brief delay to allow blur event to complete
-  nextTick(() => {
-    isCancelling.value = false
-  })
-}
-
-const saveNewTask = async () => {
-  if (isCreatingTask.value || isCancelling.value) return
-  
-  const validationError = validateTaskTitle(newTaskTitle.value)
-  if (validationError) {
-    isAddingTask.value = false
-    return
-  }
-  
-  try {
-    isCreatingTask.value = true
-    
-    const newTask = await createTask(newTaskTitle.value.trim())
-    
-    // Add the new task to the list
-    allTasks.value.push(newTask)
-    
-    // Reset input state
-    isAddingTask.value = false
-    newTaskTitle.value = ''
-    
-  } catch (error) {
-    console.error('Failed to create task:', error)
-    showGlobalError(error.message || 'Failed to create task. Please try again.')
-  } finally {
-    isCreatingTask.value = false
-  }
-}
-
-// Event handlers
+// Task modification logic
 const handleToggle = async (taskId) => {
   // Find the task to get current completion status
-  const task = allTasks.value.find(t => t.id === taskId)
+  const task = props.allTasks.find(t => t.id === taskId)
   if (!task) {
     console.error('Task not found:', taskId)
     return
@@ -232,18 +221,21 @@ const handleToggle = async (taskId) => {
       isCompleted: !task.isCompleted 
     })
     
-    // On success, refresh tasks to get updated data from server
-    const tasks = await getTasks()
-    allTasks.value = tasks || []
+    // Emit refresh event to parent
+    emit('refresh-tasks')
     
-    // Celebrate if task was completed (not uncompleted)
+    // Play appropriate sound based on action
     if (!task.isCompleted) {
+      // Task was completed - play celebration sound
       celebrateTaskCompletion()
+    } else {
+      // Task was unchecked - play uncheck sound
+      playUncheckSound()
     }
     
   } catch (error) {
     console.error('Failed to toggle task:', error)
-    showGlobalError(error.message || 'Failed to toggle task. Please try again.')
+    showError(error.message || 'Failed to toggle task. Please try again.')
   } finally {
     // Re-enable the row's controls
     togglingTasks.value.delete(taskId)
@@ -251,7 +243,7 @@ const handleToggle = async (taskId) => {
 }
 
 const handleEdit = (taskId) => {
-  const task = allTasks.value.find(t => t.id === taskId)
+  const task = props.allTasks.find(t => t.id === taskId)
   if (!task || task.isCompleted) {
     return // Don't allow editing completed tasks
   }
@@ -266,7 +258,7 @@ const handleUpdateEditValue = (taskId, value) => {
 }
 
 const handleSaveEdit = async (taskId, value = null) => {
-  const task = allTasks.value.find(t => t.id === taskId)
+  const task = props.allTasks.find(t => t.id === taskId)
   if (!task) return
   
   // Use the passed value if available, otherwise fall back to reactive state
@@ -279,9 +271,8 @@ const handleSaveEdit = async (taskId, value = null) => {
   }
   
   // Client validation for non-empty titles
-  const validationError = validateTaskTitle(newTitle)
-  if (validationError) {
-    showGlobalError(validationError)
+  if (newTitle.length > 500) {
+    showError('Task title must be 500 characters or less')
     return
   }
   
@@ -301,13 +292,12 @@ const handleSaveEdit = async (taskId, value = null) => {
       title: newTitle 
     })
     
-    // On success, refresh tasks to get updated data from server
-    const tasks = await getTasks()
-    allTasks.value = tasks || []
+    // Emit refresh event to parent
+    emit('refresh-tasks')
     
   } catch (error) {
     console.error('Failed to update task:', error)
-    showGlobalError(error.message || 'Failed to update task. Please try again.')
+    showError(error.message || 'Failed to update task. Please try again.')
   } finally {
     // Exit edit mode
     editingTasks.value.delete(taskId)
@@ -322,7 +312,7 @@ const handleCancelEdit = (taskId) => {
 }
 
 const handleDelete = (taskId) => {
-  const task = allTasks.value.find(t => t.id === taskId)
+  const task = props.allTasks.find(t => t.id === taskId)
   if (!task) return
   
   taskToDelete.value = task
@@ -338,13 +328,12 @@ const confirmDelete = async () => {
     // Call API to delete task
     await deleteTask(taskToDelete.value.id)
     
-    // Refresh tasks to get updated list from server
-    const tasks = await getTasks()
-    allTasks.value = tasks || []
+    // Emit refresh event to parent
+    emit('refresh-tasks')
     
   } catch (error) {
     console.error('Failed to delete task:', error)
-    showGlobalError(error.message || 'Failed to delete task. Please try again.')
+    showError(error.message || 'Failed to delete task. Please try again.')
   } finally {
     isDeleting.value = false
     showDeleteModal.value = false
@@ -357,51 +346,67 @@ const cancelDelete = () => {
   taskToDelete.value = null
 }
 
-// Load tasks on component mount
-onMounted(async () => {
+const startAddingTask = () => {
+  isAddingTask.value = true
+  newTaskTitle.value = ''
+  nextTick(() => {
+    taskInput.value?.focus()
+  })
+}
+
+const saveNewTask = async () => {
+  if (isCreatingTask.value) return
+  
+  const validationError = validateTaskTitle(newTaskTitle.value)
+  if (validationError) {
+    isAddingTask.value = false
+    return
+  }
+  
   try {
-    loading.value = true
-    const tasks = await getTasks()
-    allTasks.value = tasks || []
+    isCreatingTask.value = true
+    
+    // Emit to parent to create task
+    emit('create-task', newTaskTitle.value.trim())
+    
+    // Reset input state
+    isAddingTask.value = false
+    newTaskTitle.value = ''
+    
   } catch (error) {
-    console.error('Failed to load tasks:', error)
-    allTasks.value = []
-    showGlobalError('Failed to load tasks. Please refresh the page.')
+    console.error('Failed to create task:', error)
+    showError(error.message || 'Failed to create task. Please try again.')
   } finally {
-    loading.value = false
+    isCreatingTask.value = false
+  }
+}
+
+const cancelAddingTask = () => {
+  isAddingTask.value = false
+  newTaskTitle.value = ''
+}
+
+const updateNewTaskTitle = (event) => {
+  newTaskTitle.value = event.target.value
+}
+
+// Task input validation
+const validateTaskTitle = (title) => {
+  const trimmed = title.trim()
+  if (!trimmed) {
+    return 'Task title cannot be empty'
+  }
+  if (trimmed.length > 500) {
+    return 'Task title must be 500 characters or less'
+  }
+  return null
+}
+
+// Watch for isAddingTask to focus the input
+watch(() => props.isAddingTask, async (isAdding) => {
+  if (isAdding) {
+    await nextTick()
+    taskInput.value?.focus()
   }
 })
 </script>
-
-
-<style scoped>
-.no-caret {
-  caret-color: transparent;
-}
-
-/* Task sliding animations */
-.task-slide-enter-active,
-.task-slide-leave-active {
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.task-slide-enter-from {
-  opacity: 0;
-  transform: translateX(-30px) scale(0.95);
-}
-
-.task-slide-leave-to {
-  opacity: 0;
-  transform: translateX(30px) scale(0.95);
-}
-
-.task-slide-move {
-  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-/* Ensure smooth transitions for task items */
-.task-slide-enter-active .flex,
-.task-slide-leave-active .flex {
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-</style>

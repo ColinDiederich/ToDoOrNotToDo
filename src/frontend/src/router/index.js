@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import TasksList from '../components/TasksList.vue'
+import Container from '../components/Container.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'TasksList',
-    component: TasksList
+    name: 'Container',
+    component: Container
   }
 ]
 

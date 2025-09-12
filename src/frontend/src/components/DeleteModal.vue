@@ -45,6 +45,7 @@
 
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
+import { playDeleteConfirmationSound } from '../services/effects.js'
 
 // Props
 const props = defineProps({
@@ -71,6 +72,8 @@ const emit = defineEmits(['confirm', 'cancel'])
 
 // Methods
 const handleConfirm = () => {
+  // Play delete confirmation sound
+  playDeleteConfirmationSound()
   emit('confirm')
 }
 
