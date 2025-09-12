@@ -71,11 +71,11 @@ const sortOrder = ref('asc')
 
 // Computed properties for task separation
 const activeTasks = computed(() => 
-  filteredActiveTasks.value.length > 0 ? filteredActiveTasks.value : allTasks.value.filter(task => !task.isCompleted)
+  searchQuery.value ? filteredActiveTasks.value : allTasks.value.filter(task => !task.isCompleted)
 )
 
 const completedTasks = computed(() => 
-  filteredCompletedTasks.value.length > 0 ? filteredCompletedTasks.value : allTasks.value.filter(task => task.isCompleted)
+  searchQuery.value ? filteredCompletedTasks.value : allTasks.value.filter(task => task.isCompleted)
 )
 
 // Global error handling using event bus

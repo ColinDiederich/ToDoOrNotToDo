@@ -437,11 +437,19 @@ const sortTasks = (tasks, sortBy, sortOrder) => {
 
 // Computed properties for sorted tasks
 const sortedActiveTasks = computed(() => {
-  return sortTasks(props.activeTasks, props.sortBy, props.sortOrder)
+  // Use filtered tasks when search is active, otherwise use regular active tasks
+  const tasksToSort = props.searchQuery && props.filteredActiveTasks.length > 0 
+    ? props.filteredActiveTasks 
+    : props.activeTasks
+  return sortTasks(tasksToSort, props.sortBy, props.sortOrder)
 })
 
 const sortedCompletedTasks = computed(() => {
-  return sortTasks(props.completedTasks, props.sortBy, props.sortOrder)
+  // Use filtered tasks when search is active, otherwise use regular completed tasks
+  const tasksToSort = props.searchQuery && props.filteredCompletedTasks.length > 0 
+    ? props.filteredCompletedTasks 
+    : props.completedTasks
+  return sortTasks(tasksToSort, props.sortBy, props.sortOrder)
 })
 
 const sortedFilteredTasks = computed(() => {

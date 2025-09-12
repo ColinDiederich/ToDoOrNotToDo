@@ -69,10 +69,3 @@ export const showError = (message, options = {}) => {
   eventBus.emit('show-error', { message, ...options })
 }
 
-export const showSuccess = (message, options = {}) => {
-  eventBus.emit('show-success', { message, ...options })
-}
-
-export const showInfo = (message, options = {}) => {
-  eventBus.emit('show-info', { message, ...options })
-}
