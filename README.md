@@ -9,7 +9,7 @@ A small full-stack **to-do app** showcasing clean API design in **.NET 8**, mini
 - UX: single list, add/edit/toggle/delete, sort and search, delete confirmation modal, sound and visual effects, global error banner, pessimistic updates, initial spinner
 
 ## Prerequisites
-- **.NET 8 SDK** — https://dotnet.microsoft.com/download
+- **.NET 8 SDK** — https://dotnet.microsoft.com/en-us/download/dotnet/8.0
 - **Node.js (LTS)** — https://nodejs.org/
 
 ## Getting Started
