@@ -33,6 +33,10 @@ npm run dev
 ```
 - App runs at `http://localhost:5173`.
 
+### 3) Warning: This app has sound
+- Disable via toggle in bottom right corner
+- Ensure sound levels / headphones are appropriately set to prevent abrupt noise entering your environment
+
 ## Backend API Quick Reference
 **Base:** `http://localhost:5280/api`
 
