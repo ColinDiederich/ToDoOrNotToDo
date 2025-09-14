@@ -18,7 +18,6 @@
           :key="option.value"
           @click="selectOption(option.value)"
           class="dropdown-option"
-          :class="{ 'option-selected': sortBy === option.value }"
         >
           {{ option.label }}
         </div>
