@@ -125,6 +125,7 @@ curl -i -X DELETE http://localhost:5280/api/tasks/1
 - **Comprehensive Edit View:** To accomodate new properties, modify edit functionality to expand Task row into edit panel, allowing full configuration of additional properties.
 - **Undo Functionality:** Allow erroneous deletes to be undone. Requires soft deleting in the backend, either a time window -> hard delete or full history of deleted tasks in another view for recovery.
 - **Compound Actions:** Through caterpillar button or settings cog. Check off all active tasks, uncheck all completed, clear all completed, empty list, manual database re-sync.
+- **Internationalization:** Add an i18n strategy for expanding to multiple languages. Replace hard-coded strings with language-specific keys
 - **HTTP Client:** Switch to **Axios** for interceptors, timeouts, and retry strategies.
 - **Quality Gates:** Add **ESLint + Prettier** for consistent formatting; enable **Playwright/Cypress** smoke tests.
 - **Logging/Observability:** Adopt **Serilog** (structured JSON logs) or similar utility for request correlation/telemetry/log productionalization.
