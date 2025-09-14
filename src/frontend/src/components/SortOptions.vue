@@ -7,8 +7,8 @@
     <div class="custom-dropdown" @click="toggleDropdown" :class="{ 'dropdown-open': isDropdownOpen }">
       <div class="dropdown-selected">
         <span>{{ getSelectedLabel() }}</span>
-        <svg class="dropdown-arrow" :class="{ 'arrow-up': isDropdownOpen }" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        <svg class="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </div>
       
